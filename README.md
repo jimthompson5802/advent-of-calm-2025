@@ -13,6 +13,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 7: Build Complete E-Commerce Architecture
 - [x] Day 8: Add Controls (security, performance, compliance)
 - [x] Day 9: Add Flows (order processing, inventory check) and Flow Controls (audit logging)
+- [x] Day 10: Linked ADRs to the e-commerce architecture (`adrs`)
 ...
 
 ## Tools
@@ -72,6 +73,9 @@ This directory will contain CALM patterns for architectural governance.
 
 Guides and screenshots supporting this repo:
 
+- Architecture Decision Records (ADRs)
+  - [ADR 0001: Use Message Queue for Asynchronous Order Processing](docs/adr/0001-use-message-queue-for-async-processing.md)
+  - [ADR 0002: Use OAuth2 for API Authentication](docs/adr/0002-use-oauth2-for-api-authentication.md)
 - [docs/controls-guide.md](docs/controls-guide.md): how we model architecture/node/flow controls
 - [docs/flows-guide.md](docs/flows-guide.md): how we model business flows and transitions
 - [docs/screenshots](docs/screenshots): screenshots used in the journey
