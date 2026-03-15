@@ -11,6 +11,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 5: Add Interfaces to Nodes
 - [x] Day 6: Document with Metadata
 - [x] Day 7: Build Complete E-Commerce Architecture
+- [x] Day 8: Add Controls (security, performance, compliance)
 ...
 
 ## Tools
@@ -30,6 +31,9 @@ calm
 
 # Validate an architecture (recommended during editing)
 calm validate -a architectures/my-first-architecture.json --strict -f pretty
+
+# Validate the e-commerce platform architecture
+calm validate -a architectures/ecommerce-platform.json -f pretty
 
 # Generate an architecture from a pattern
 calm generate -p patterns/my-pattern.json -o architectures/generated.json
