@@ -14,7 +14,24 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 8: Add Controls (security, performance, compliance)
 - [x] Day 9: Add Flows (order processing, inventory check) and Flow Controls (audit logging)
 - [x] Day 10: Linked ADRs to the e-commerce architecture (`adrs`)
+- [x] Day 11: Generated a documentation website (Docusaurus) for the e-commerce docs
 ...
+
+## Documentation website (Day 11)
+
+Day 11 produced a Docusaurus documentation website for the generated e-commerce architecture docs.
+
+- Generated site source: [docs/generated/ecommerce-docs](docs/generated/ecommerce-docs)
+- Features: Mermaid diagrams enabled (`@docusaurus/theme-mermaid`) + local full-text search (`docusaurus-plugin-search-local`)
+- Run locally:
+
+```bash
+cd docs/generated/ecommerce-docs
+npm install
+npm start
+```
+
+- Static output (after `npm run build`): `docs/generated/ecommerce-docs/build/`
 
 ## Tools
 
