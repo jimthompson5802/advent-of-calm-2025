@@ -1,0 +1,86 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/calm.json",
+  "$id": "https://example.com/patterns/web-app-pattern.json",
+  "title": "Web Application Pattern",
+  "description": "A reusable 3-tier web application pattern with a frontend, API service, and database.",
+  "type": "object",
+  "properties": {
+    "nodes": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "prefixItems": [
+        {
+          "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/node",
+          "type": "object",
+          "properties": {
+            "unique-id": {"const": "web-frontend"},
+            "name": {"const": "Web Frontend"},
+            "node-type": {"const": "webclient"},
+            "description": {"type": "string"}
+          }
+        },
+        {
+          "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/node",
+          "type": "object",
+          "properties": {
+            "unique-id": {"const": "api-service"},
+            "name": {"const": "API Service"},
+            "node-type": {"const": "service"},
+            "description": {"type": "string"}
+          }
+        },
+        {
+          "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/node",
+          "type": "object",
+          "properties": {
+            "unique-id": {"const": "app-database"},
+            "name": {"const": "Application Database"},
+            "node-type": {"const": "database"},
+            "description": {"type": "string"}
+          }
+        }
+      ]
+    },
+    "relationships": {
+      "type": "array",
+      "minItems": 2,
+      "maxItems": 2,
+      "prefixItems": [
+        {
+          "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/relationship",
+          "type": "object",
+          "properties": {
+            "unique-id": {"const": "frontend-to-api"},
+            "description": {"type": "string"},
+            "relationship-type": {
+              "const": {
+                "connects": {
+                  "source": {"node": "web-frontend"},
+                  "destination": {"node": "api-service"}
+                }
+              }
+            }
+          }
+        },
+        {
+          "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/relationship",
+          "type": "object",
+          "properties": {
+            "unique-id": {"const": "api-to-database"},
+            "description": {"type": "string"},
+            "relationship-type": {
+              "const": {
+                "connects": {
+                  "source": {"node": "api-service"},
+                  "destination": {"node": "app-database"}
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  },
+  "required": ["nodes", "relationships"]
+}

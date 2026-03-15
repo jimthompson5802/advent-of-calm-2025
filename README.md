@@ -20,6 +20,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 14: AI-assisted architecture resilience improvements documented in [docs/architecture-improvements.md](docs/architecture-improvements.md)
 - [x] Day 15: Added operational metadata for support documentation
 - [x] Day 16: Generated operations documentation from docify templates
+- [x] Day 17: Completed pattern examples
 ...
 
 ## Documentation website (Day 11)
