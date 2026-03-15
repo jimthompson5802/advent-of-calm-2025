@@ -12,7 +12,15 @@
     "version": "1.0.0",
     "created": "2026-03-15",
     "description": "E-commerce order processing platform",
-    "tags": ["ecommerce", "microservices", "orders"]
+    "tags": ["ecommerce", "microservices", "orders"],
+    "monitoring": {
+      "grafana-dashboard": "https://grafana.example.com/d/ecommerce-overview",
+      "kibana-logs": "https://kibana.example.com/app/discover#/ecommerce-*",
+      "pagerduty-service": "https://pagerduty.example.com/services/ECOMMERCE",
+      "statuspage": "https://status.example.com",
+      "metrics-retention": "30 days",
+      "log-retention": "90 days"
+    }
   },
   "controls": {
     "security": {
@@ -91,7 +99,15 @@
       "name": "Load Balancer",
       "description": "Entry point distributing traffic across API Gateway instances.",
       "metadata": {
-        "owner": "Platform Team",
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/load-balancer",
+        "tier": "tier-1",
+        "dependencies": ["api-gateway-1", "api-gateway-2"],
+        "dashboard": "https://grafana.example.com/d/load-balancer",
+        "log-query": "service:load-balancer",
+        "alerts": ["LB High Error Rate", "LB Target Unhealthy"],
         "repository": "https://example.com/repo",
         "deployment-type": "managed",
         "ha-enabled": true
@@ -110,7 +126,15 @@
       "name": "API Gateway",
       "description": "Edge service providing a single entry point for customer and admin requests.",
       "metadata": {
-        "owner": "Platform Team",
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/api-gateway",
+        "tier": "tier-1",
+        "dependencies": ["order-service", "inventory-service"],
+        "dashboard": "https://grafana.example.com/d/api-gateway",
+        "log-query": "service:api-gateway AND instance:api-gateway-1",
+        "alerts": ["API Gateway 5xx Spike", "API Gateway Latency High"],
         "repository": "https://example.com/repo",
         "deployment-type": "container",
         "runtime": "nginx",
@@ -147,7 +171,15 @@
       "name": "API Gateway",
       "description": "Edge service providing a single entry point for customer and admin requests.",
       "metadata": {
-        "owner": "Platform Team",
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/api-gateway",
+        "tier": "tier-1",
+        "dependencies": ["order-service", "inventory-service"],
+        "dashboard": "https://grafana.example.com/d/api-gateway",
+        "log-query": "service:api-gateway AND instance:api-gateway-2",
+        "alerts": ["API Gateway 5xx Spike", "API Gateway Latency High"],
         "repository": "https://example.com/repo",
         "deployment-type": "container",
         "runtime": "nginx",
@@ -184,7 +216,38 @@
       "name": "Order Service",
       "description": "Creates and manages customer orders, orchestrating inventory reservation and payment authorization.",
       "metadata": {
-        "owner": "Orders Team",
+        "owner": "orders-team",
+        "oncall-slack": "#oncall-orders",
+        "health-endpoint": "/actuator/health",
+        "runbook": "https://runbooks.example.com/order-service",
+        "tier": "tier-1",
+        "dependencies": ["order-database-primary", "order-database-replica", "message-broker"],
+        "dashboard": "https://grafana.example.com/d/order-service",
+        "log-query": "service:order-service",
+        "alerts": ["Order Service Error Rate", "Order Service Latency High"],
+        "failure-modes": [
+          {
+            "symptom": "HTTP 503 errors",
+            "likely-cause": "Database connection pool exhausted",
+            "check": "Check connection pool metrics in Grafana dashboard",
+            "remediation": "Scale up service replicas or increase pool size",
+            "escalation": "If persists > 5min, page DBA team"
+          },
+          {
+            "symptom": "High latency (>2s p99)",
+            "likely-cause": "Payment service degradation",
+            "check": "Check payment-service health and circuit breaker status",
+            "remediation": "Circuit breaker should open automatically; check fallback queue",
+            "escalation": "Contact payments-team if circuit breaker not triggering"
+          },
+          {
+            "symptom": "Order validation failures",
+            "likely-cause": "Inventory service returning stale data",
+            "check": "Verify inventory-service cache TTL and database replication lag",
+            "remediation": "Clear inventory cache; check replica sync status",
+            "escalation": "Contact platform-team for cache issues"
+          }
+        ],
         "repository": "https://example.com/repo",
         "deployment-type": "container",
         "runtime": "java",
@@ -227,7 +290,38 @@
       "name": "Inventory Service",
       "description": "Tracks stock levels and reserves inventory for confirmed orders.",
       "metadata": {
-        "owner": "Inventory Team",
+        "owner": "inventory-team",
+        "oncall-slack": "#oncall-inventory",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/inventory-service",
+        "tier": "tier-2",
+        "dependencies": ["inventory-database"],
+        "dashboard": "https://grafana.example.com/d/inventory-service",
+        "log-query": "service:inventory-service",
+        "alerts": ["Inventory Service Error Rate", "Inventory Service Latency High"],
+        "failure-modes": [
+          {
+            "symptom": "Stale stock levels",
+            "likely-cause": "Cache TTL too long or replica lag",
+            "check": "Check inventory cache TTL and database replication lag",
+            "remediation": "Reduce cache TTL; verify replica sync status",
+            "escalation": "Contact platform-team for cache issues"
+          },
+          {
+            "symptom": "Inventory updates timing out",
+            "likely-cause": "Database contention or slow queries",
+            "check": "Review slow query logs and DB CPU metrics",
+            "remediation": "Add index or scale database resources",
+            "escalation": "Page DBA team if timeouts persist > 10min"
+          },
+          {
+            "symptom": "High 5xx error rate",
+            "likely-cause": "Dependency instability or memory pressure",
+            "check": "Inspect service memory usage and recent deployments",
+            "remediation": "Rollback recent deploy or scale replicas",
+            "escalation": "Contact inventory-team lead"
+          }
+        ],
         "repository": "https://example.com/repo",
         "deployment-type": "container",
         "runtime": "go",
@@ -254,7 +348,38 @@
       "name": "Payment Service",
       "description": "Authorizes and captures payments for orders.",
       "metadata": {
-        "owner": "Payments Team",
+        "owner": "payments-team",
+        "oncall-slack": "#oncall-payments",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/payment-service",
+        "tier": "tier-1",
+        "dependencies": ["message-broker"],
+        "dashboard": "https://grafana.example.com/d/payment-service",
+        "log-query": "service:payment-service",
+        "alerts": ["Payment Service Error Rate", "Payment Processing Backlog"],
+        "failure-modes": [
+          {
+            "symptom": "Payment processing backlog",
+            "likely-cause": "Consumer lag or broker throttling",
+            "check": "Check queue depth and consumer lag in broker dashboard",
+            "remediation": "Scale payment-service consumers",
+            "escalation": "Contact platform-team if broker throttling persists"
+          },
+          {
+            "symptom": "High payment decline rate",
+            "likely-cause": "External provider issues or misconfiguration",
+            "check": "Review provider status page and recent config changes",
+            "remediation": "Fail over to secondary provider or roll back config",
+            "escalation": "Page payments-team lead and vendor support"
+          },
+          {
+            "symptom": "AMQP connection errors",
+            "likely-cause": "Broker connectivity or auth issues",
+            "check": "Verify broker connectivity and credentials rotation logs",
+            "remediation": "Restart consumers; re-issue credentials",
+            "escalation": "Contact platform-team if connectivity issues persist"
+          }
+        ],
         "repository": "https://example.com/repo",
         "deployment-type": "container",
         "runtime": "nodejs",
@@ -345,7 +470,10 @@
         "deployment-type": "managed-database",
         "engine": "postgresql",
         "role": "primary",
-        "replication-mode": "async"
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "30m",
+        "dba-contact": "dba-orders@example.com"
       },
       "interfaces": [
         {
@@ -368,7 +496,10 @@
         "deployment-type": "managed-database",
         "engine": "postgresql",
         "role": "replica",
-        "replication-mode": "async"
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "45m",
+        "dba-contact": "dba-orders@example.com"
       },
       "interfaces": [
         {
@@ -389,7 +520,10 @@
         "owner": "Inventory Team",
         "repository": "https://example.com/repo",
         "deployment-type": "managed-database",
-        "engine": "postgresql"
+        "engine": "postgresql",
+        "backup-schedule": "daily 03:00 UTC",
+        "restore-time": "45m",
+        "dba-contact": "dba-inventory@example.com"
       },
       "interfaces": [
         {
@@ -716,6 +850,12 @@
       "unique-id": "order-processing-flow",
       "name": "Customer Order Processing",
       "description": "End-to-end flow from customer placing an order to payment confirmation",
+      "metadata": {
+        "business-impact": "Customers cannot complete purchases - direct revenue loss",
+        "degraded-behavior": "Orders queue in message broker; processed when service recovers",
+        "customer-communication": "Display 'Order processing delayed' message",
+        "sla": "99.9% availability, 30s p99 latency"
+      },
       "controls": {
         "audit": {
           "description": "All order processing steps must be logged for audit compliance",
@@ -758,6 +898,12 @@
       "unique-id": "inventory-check-flow",
       "name": "Inventory Stock Check",
       "description": "Admin checks and updates inventory stock levels",
+      "metadata": {
+        "business-impact": "Stock levels may be inaccurate - risk of overselling",
+        "degraded-behavior": "Fall back to cached inventory; flag orders for manual review",
+        "customer-communication": "Display 'Stock availability being confirmed'",
+        "sla": "99.5% availability, 500ms p99 latency"
+      },
       "transitions": [
         {
           "relationship-unique-id": "admin-interacts-with-load-balancer",

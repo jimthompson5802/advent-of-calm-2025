@@ -18,6 +18,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 12: Used CALM documentation widgets to reduce manual doc work
 - [x] Day 13: Learned Handlebars templating for custom documentation
 - [x] Day 14: AI-assisted architecture resilience improvements documented in [docs/architecture-improvements.md](docs/architecture-improvements.md)
+- [x] Day 15: Added operational metadata for support documentation
 ...
 
 ## Documentation website (Day 11)
