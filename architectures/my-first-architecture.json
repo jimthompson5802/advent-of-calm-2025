@@ -9,19 +9,60 @@
       "node-type": "service",
       "name": "Customer Authentication Service",
       "description": "Validates user credentials and manages session tokens."
+    },
+    {
+      "unique-id": "customer-authentication-database",
+      "node-type": "database",
+      "name": "Customer Authentication Database",
+      "description": "Stores customer authentication data for the Customer Authentication Service."
+    },
+    {
+      "unique-id": "customer",
+      "node-type": "actor",
+      "name": "Customer",
+      "description": "End user who uses the Customer Authentication Service."
+    },
+    {
+      "unique-id": "customer-authentication-system",
+      "node-type": "system",
+      "name": "Customer Authentication System",
+      "description": "Overall system containing the customer authentication service and its database."
     }
   ],
   "relationships": [
     {
-      "unique-id": "auth-service-internal-processing",
-      "description": "Performs credential validation and session token issuance.",
+      "unique-id": "customer-authentication-system-composed-of",
+      "description": "System is composed of the authentication service and database.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "customer-authentication-system",
+          "nodes": [
+            "customer-authentication-service",
+            "customer-authentication-database"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "customer-interacts-with-auth-service",
+      "description": "Customer interacts with the Customer Authentication Service.",
+      "relationship-type": {
+        "interacts": {
+          "actor": "customer",
+          "nodes": ["customer-authentication-service"]
+        }
+      }
+    },
+    {
+      "unique-id": "auth-service-connects-auth-db",
+      "description": "Connects to the database for storing and retrieving authentication data.",
       "relationship-type": {
         "connects": {
           "source": {
             "node": "customer-authentication-service"
           },
           "destination": {
-            "node": "customer-authentication-service"
+            "node": "customer-authentication-database"
           }
         }
       }
