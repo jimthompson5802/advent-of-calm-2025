@@ -3,12 +3,25 @@
   "unique-id": "my-first-architecture",
   "name": "My First Architecture",
   "description": "A minimal CALM architecture containing a single customer authentication service.",
+  "metadata": {
+    "owner": "Architecture Team",
+    "version": "1.0.0",
+    "created": "2026-03-15",
+    "description": "authentication service",
+    "tags": ["learning", "authentication", "demo"]
+  },
   "nodes": [
     {
       "unique-id": "customer-authentication-service",
       "node-type": "service",
       "name": "Customer Authentication Service",
       "description": "Validates user credentials and manages session tokens.",
+      "metadata": {
+        "tech-owner": "The Tech Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "sla-tier": "tier-1"
+      },
       "interfaces": [
         {
           "unique-id": "customer-auth-api",
@@ -77,6 +90,11 @@
     {
       "unique-id": "auth-service-connects-auth-db",
       "description": "Connects to the database for storing and retrieving authentication data.",
+      "metadata": {
+        "latency-sla": "< 100ms",
+        "monitoring": true,
+        "circuit-breaker": true
+      },
       "relationship-type": {
         "connects": {
           "source": {
