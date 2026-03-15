@@ -1,0 +1,41 @@
+{
+  "$schema": "https://example.com/patterns/company-base-pattern.json",
+  "nodes": [
+    {
+      "unique-id": "test-service",
+      "node-type": "service",
+      "name": "Test Service",
+      "description": "Minimal service for standards compliance testing.",
+      "costCenter": "CC-1234",
+      "owner": "test-team",
+      "environment": "development"
+    },
+    {
+      "unique-id": "test-database",
+      "node-type": "database",
+      "name": "Test Database",
+      "description": "Minimal database for standards compliance testing.",
+      "costCenter": "CC-1235",
+      "owner": "test-team",
+      "environment": "development"
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "service-to-database",
+      "description": "Test service connects to test database.",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "test-service"
+          },
+          "destination": {
+            "node": "test-database"
+          }
+        }
+      },
+      "dataClassification": "internal",
+      "encrypted": true
+    }
+  ]
+}

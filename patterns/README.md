@@ -27,4 +27,31 @@ calm validate -p patterns/web-app-pattern.json -a my-app.json
 
 - Node and relationship descriptions
 - Interfaces on nodes
+
+## Using company-base-pattern.json
+
+This base pattern enforces Standards only, not architecture structure. It
+applies the company node and relationship Standards to every node and
+relationship in the architecture.
+
+### How it differs from web-app-pattern.json
+
+- `web-app-pattern.json` constrains structure (specific nodes and relationships)
+- `company-base-pattern.json` constrains properties (standards on all nodes and relationships)
+
+### When to use each pattern type
+
+- Use `web-app-pattern.json` when you need a fixed 3-tier web app shape
+- Use `company-base-pattern.json` when you want any architecture to meet company Standards
+
+### Validate any architecture against company Standards
+
+Use URL mapping so the pattern can resolve the local Standards files:
+
+```bash
+calm validate \
+	-p patterns/company-base-pattern.json \
+	-a architectures/my-architecture.json \
+	-u /path/to/calm-url-mapping.json
+```
 - Metadata on the architecture, nodes, relationships, or flows
