@@ -12,6 +12,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 6: Document with Metadata
 - [x] Day 7: Build Complete E-Commerce Architecture
 - [x] Day 8: Add Controls (security, performance, compliance)
+- [x] Day 9: Add Flows (order processing, inventory check) and Flow Controls (audit logging)
 ...
 
 ## Tools
@@ -69,4 +70,8 @@ This directory will contain CALM patterns for architectural governance.
 
 ## Docs
 
-Generated documentation from CALM models.
+Guides and screenshots supporting this repo:
+
+- [docs/controls-guide.md](docs/controls-guide.md): how we model architecture/node/flow controls
+- [docs/flows-guide.md](docs/flows-guide.md): how we model business flows and transitions
+- [docs/screenshots](docs/screenshots): screenshots used in the journey
