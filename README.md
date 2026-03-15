@@ -21,6 +21,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 15: Added operational metadata for support documentation
 - [x] Day 16: Generated operations documentation from docify templates
 - [x] Day 17: Completed pattern examples
+- [x] Day 18: Created company-specific node and relationship schema extensions
 ...
 
 ## Documentation website (Day 11)
@@ -91,6 +92,12 @@ This directory will contain CALM architecture files documenting systems.
 ## Patterns
 
 This directory will contain CALM patterns for architectural governance.
+
+## Standards
+
+This directory contains CALM Standards that extend core schemas with
+organization-specific requirements. See [standards/README.md](standards/README.md)
+for details.
 
 ## Docs
 

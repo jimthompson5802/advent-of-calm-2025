@@ -1,0 +1,29 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Company Node Standard",
+  "allOf": [
+    {
+      "$ref": "https://calm.finos.org/release/1.2/meta/core.json#/defs/node"
+    },
+    {
+      "type": "object",
+      "properties": {
+        "costCenter": {
+          "type": "string",
+          "pattern": "^CC-[0-9]{4}$",
+          "description": "Company cost center code, for example CC-1234."
+        },
+        "owner": {
+          "type": "string",
+          "description": "Team or individual responsible for the node."
+        },
+        "environment": {
+          "type": "string",
+          "enum": ["development", "staging", "production"],
+          "description": "Deployment environment for the node."
+        }
+      },
+      "required": ["costCenter", "owner"]
+    }
+  ]
+}
