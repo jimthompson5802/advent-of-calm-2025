@@ -1,0 +1,30 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/calm.json",
+  "unique-id": "my-first-architecture",
+  "name": "My First Architecture",
+  "description": "A minimal CALM architecture containing a single customer authentication service.",
+  "nodes": [
+    {
+      "unique-id": "customer-authentication-service",
+      "node-type": "service",
+      "name": "Customer Authentication Service",
+      "description": "Validates user credentials and manages session tokens."
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "auth-service-internal-processing",
+      "description": "Performs credential validation and session token issuance.",
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "customer-authentication-service"
+          },
+          "destination": {
+            "node": "customer-authentication-service"
+          }
+        }
+      }
+    }
+  ]
+}
