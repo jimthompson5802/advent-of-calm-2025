@@ -4,13 +4,19 @@
       "unique-id": "web-frontend",
       "name": "Web Frontend",
       "node-type": "webclient",
-      "description": "Browser-based UI that serves the web application to end users."
+      "description": "Browser-based UI that serves the web application to end users.",
+      "costCenter": "CC-1001",
+      "owner": "frontend-team",
+      "environment": "production"
     },
     {
       "unique-id": "api-service",
       "name": "API Service",
       "node-type": "service",
       "description": "Business logic and API layer that handles requests from the frontend.",
+      "costCenter": "CC-2001",
+      "owner": "backend-team",
+      "environment": "production",
       "interfaces": [
         {
           "unique-id": "api-service-https",
@@ -25,6 +31,9 @@
       "name": "Application Database",
       "node-type": "database",
       "description": "Persistent data store for application records and state.",
+      "costCenter": "CC-3001",
+      "owner": "data-team",
+      "environment": "production",
       "interfaces": [
         {
           "unique-id": "app-database-postgres",
@@ -39,6 +48,8 @@
     {
       "unique-id": "frontend-to-api",
       "description": "Sends user requests from the web frontend to the API service.",
+      "dataClassification": "internal",
+      "encrypted": true,
       "relationship-type": {
         "connects": {
           "source": {
@@ -53,6 +64,8 @@
     {
       "unique-id": "api-to-database",
       "description": "Reads and writes application data in the database.",
+      "dataClassification": "confidential",
+      "encrypted": true,
       "relationship-type": {
         "connects": {
           "source": {

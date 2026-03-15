@@ -54,4 +54,24 @@ calm validate \
 	-a architectures/my-architecture.json \
 	-u /path/to/calm-url-mapping.json
 ```
+
+## Multi-pattern validation approach
+
+Structural patterns and standards patterns work together by validating the same
+architecture against each pattern. A structural pattern checks the shape of the
+system, while a standards pattern checks the required properties on whatever
+nodes and relationships exist.
+
+This split is better than a combined pattern because it keeps governance rules
+reusable across many architectures and lets teams adopt structural patterns
+without duplicating standards requirements.
+
+In CI/CD, you can validate an architecture against both patterns to enforce
+governance gates: structure for approved designs and standards for compliance
+fields.
+
+## Current patterns
+
+- `web-app-pattern.json` (structural)
+- `company-base-pattern.json` (standards)
 - Metadata on the architecture, nodes, relationships, or flows
