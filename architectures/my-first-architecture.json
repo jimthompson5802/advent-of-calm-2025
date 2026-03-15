@@ -8,13 +8,34 @@
       "unique-id": "customer-authentication-service",
       "node-type": "service",
       "name": "Customer Authentication Service",
-      "description": "Validates user credentials and manages session tokens."
+      "description": "Validates user credentials and manages session tokens.",
+      "interfaces": [
+        {
+          "unique-id": "customer-auth-api",
+          "definition-url": "https://my-enterprise/patterns/rest-api-interface.json",
+          "config": {
+            "host": "api.example.com",
+            "port": 443,
+            "basePath": "/api/v1",
+            "authentication": "None"
+          }
+        }
+      ]
     },
     {
       "unique-id": "customer-authentication-database",
       "node-type": "database",
       "name": "Customer Authentication Database",
-      "description": "Stores customer authentication data for the Customer Authentication Service."
+      "description": "Stores customer authentication data for the Customer Authentication Service.",
+      "interfaces": [
+        {
+          "unique-id": "customer-auth-db-jdbc",
+          "protocol": "JDBC",
+          "host": "db.example.com",
+          "port": 5432,
+          "database": "customer_auth"
+        }
+      ]
     },
     {
       "unique-id": "customer",
@@ -59,10 +80,12 @@
       "relationship-type": {
         "connects": {
           "source": {
-            "node": "customer-authentication-service"
+            "node": "customer-authentication-service",
+            "interfaces": ["customer-auth-api"]
           },
           "destination": {
-            "node": "customer-authentication-database"
+            "node": "customer-authentication-database",
+            "interfaces": ["customer-auth-db-jdbc"]
           }
         }
       }
