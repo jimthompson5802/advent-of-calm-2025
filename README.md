@@ -16,6 +16,7 @@ This repository tracks my 24-day journey learning the Common Architecture Langua
 - [x] Day 10: Linked ADRs to the e-commerce architecture (`adrs`)
 - [x] Day 11: Generated a documentation website (Docusaurus) for the e-commerce docs
 - [x] Day 12: Used CALM documentation widgets to reduce manual doc work
+- [x] Day 13: Learned Handlebars templating for custom documentation
 ...
 
 ## Documentation website (Day 11)
