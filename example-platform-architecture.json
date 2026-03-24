@@ -625,13 +625,10 @@
             "api-gateway-2",
             "order-service",
             "inventory-service",
-            "payment-service"
-            ,
+            "payment-service",
             "message-broker",
             "order-queue",
             "order-database-cluster",
-            "order-database-primary",
-            "order-database-replica",
             "inventory-database"
           ]
         }
