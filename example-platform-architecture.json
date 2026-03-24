@@ -512,6 +512,18 @@
       ]
     },
     {
+      "unique-id": "order-database-cluster-secondary",
+      "node-type": "system",
+      "name": "Order Database Cluster Secondary",
+      "description": "Secondary cluster containing order database replicas for disaster recovery.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "replication-mode": "async"
+      }
+    },
+    {
       "unique-id": "inventory-database",
       "node-type": "database",
       "name": "Inventory Database",
@@ -532,6 +544,58 @@
           "host": "inventory-db.internal",
           "port": 5432,
           "database": "inventory"
+        }
+      ]
+    },
+    {
+      "unique-id": "order-database-secondary",
+      "node-type": "database",
+      "name": "Order Database Secondary",
+      "description": "Secondary database for order data in disaster recovery region.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "engine": "postgresql",
+        "role": "secondary",
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "30m",
+        "dba-contact": "dba-orders@example.com"
+      },
+      "interfaces": [
+        {
+          "unique-id": "order-db-secondary-jdbc",
+          "protocol": "JDBC",
+          "host": "order-db-secondary.internal",
+          "port": 5432,
+          "database": "orders"
+        }
+      ]
+    },
+    {
+      "unique-id": "order-database-replica-secondary",
+      "node-type": "database",
+      "name": "Order Database Replica Secondary",
+      "description": "Read replica for secondary order database.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "engine": "postgresql",
+        "role": "replica",
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "45m",
+        "dba-contact": "dba-orders@example.com"
+      },
+      "interfaces": [
+        {
+          "unique-id": "order-db-replica-secondary-jdbc",
+          "protocol": "JDBC",
+          "host": "order-db-replica-secondary.internal",
+          "port": 5432,
+          "database": "orders"
         }
       ]
     },
@@ -594,12 +658,32 @@
       }
     },
     {
+      "unique-id": "order-database-cluster-secondary-composed-of",
+      "description": "Secondary order database cluster includes secondary and replica nodes.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "order-database-cluster-secondary",
+          "nodes": ["order-database-secondary", "order-database-replica-secondary"]
+        }
+      }
+    },
+    {
       "unique-id": "us-east-1-deployed-in",
       "description": "E-commerce platform system is deployed in US East 1 region.",
       "relationship-type": {
         "deployed-in": {
           "container": "us-east-1",
           "nodes": ["ecommerce-platform-system"]
+        }
+      }
+    },
+    {
+      "unique-id": "us-east-2-deployed-in",
+      "description": "Secondary order database cluster is deployed in US East 2 region.",
+      "relationship-type": {
+        "deployed-in": {
+          "container": "us-east-2",
+          "nodes": ["order-database-cluster-secondary"]
         }
       }
     },
@@ -862,6 +946,25 @@
           "destination": {
             "node": "inventory-database",
             "interfaces": ["inventory-db-jdbc"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "order-database-cluster-replicates-to-secondary",
+      "description": "Replicates order data to secondary cluster for disaster recovery.",
+      "metadata": {
+        "replication-type": "async",
+        "monitoring": true,
+        "failover-enabled": true
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "order-database-cluster"
+          },
+          "destination": {
+            "node": "order-database-cluster-secondary"
           }
         }
       }
