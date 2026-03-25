@@ -1,0 +1,813 @@
+{
+  "$schema": "https://calm.finos.org/release/1.2/meta/calm.json",
+  "unique-id": "us-east-1-ecommerce-platform",
+  "name": "US East 1 E-Commerce Platform",
+  "description": "E-commerce order processing platform deployed in AWS US East 1 region",
+  "metadata": {
+    "owner": "github-copilot@example.com",
+    "version": "1.0.0",
+    "created": "2026-03-24",
+    "description": "US East 1 deployment of e-commerce platform",
+    "tags": ["ecommerce", "microservices", "us-east-1"],
+    "region": "us-east-1"
+  },
+  "nodes": [
+    {
+      "unique-id": "customer",
+      "node-type": "actor",
+      "name": "Customer",
+      "description": "End user who browses the store and places orders.",
+      "metadata": {
+        "owner": "Customer",
+        "repository": "https://example.com/repo",
+        "deployment-type": "n/a"
+      }
+    },
+    {
+      "unique-id": "admin",
+      "node-type": "actor",
+      "name": "Admin",
+      "description": "Operations user who manages orders, inventory, and payment exceptions.",
+      "metadata": {
+        "owner": "Operations",
+        "repository": "https://example.com/repo",
+        "deployment-type": "n/a"
+      }
+    },
+    {
+      "unique-id": "us-east-1",
+      "node-type": "network",
+      "name": "US East 1",
+      "description": "AWS US East 1 (N. Virginia) network region"
+    },
+    {
+      "unique-id": "ecommerce-platform-system",
+      "node-type": "system",
+      "name": "E-Commerce Platform",
+      "description": "System boundary containing the order processing microservices.",
+      "metadata": {
+        "owner": "Platform Architecture",
+        "repository": "https://example.com/repo",
+        "deployment-type": "cloud"
+      }
+    },
+    {
+      "unique-id": "load-balancer",
+      "node-type": "service",
+      "name": "Load Balancer",
+      "description": "Entry point distributing traffic across API Gateway instances.",
+      "metadata": {
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/load-balancer",
+        "tier": "tier-1",
+        "dependencies": ["api-gateway-1", "api-gateway-2"],
+        "dashboard": "https://grafana.example.com/d/load-balancer",
+        "log-query": "service:load-balancer",
+        "alerts": ["LB High Error Rate", "LB Target Unhealthy"],
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed",
+        "ha-enabled": true
+      },
+      "interfaces": [
+        {
+          "unique-id": "load-balancer-public-https",
+          "url": "https://api.example.com",
+          "authentication": "OAuth2"
+        }
+      ]
+    },
+    {
+      "unique-id": "api-gateway-1",
+      "node-type": "service",
+      "name": "API Gateway",
+      "description": "Edge service providing a single entry point for customer and admin requests.",
+      "metadata": {
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/api-gateway",
+        "tier": "tier-1",
+        "dependencies": ["order-service", "inventory-service"],
+        "dashboard": "https://grafana.example.com/d/api-gateway",
+        "log-query": "service:api-gateway AND instance:api-gateway-1",
+        "alerts": ["API Gateway 5xx Spike", "API Gateway Latency High"],
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "runtime": "nginx",
+        "sla-tier": "tier-1",
+        "ha-enabled": true
+      },
+      "controls": {
+        "performance": {
+          "description": "API Gateway rate limiting and caching requirements",
+          "requirements": [
+            {
+              "requirement-url": "https://internal-policy.example.com/performance/rate-limiting",
+              "config-url": "https://configs.example.com/gateway/rate-limits.yaml"
+            },
+            {
+              "requirement-url": "https://internal-policy.example.com/performance/caching-policy",
+              "config": { "default-ttl-seconds": 300, "cache-control": "private" }
+            }
+          ]
+        }
+      },
+      "interfaces": [
+        {
+          "unique-id": "api-gateway-1-internal-https",
+          "host": "api-gateway-1.internal",
+          "port": 8443,
+          "authentication": "mTLS"
+        }
+      ]
+    },
+    {
+      "unique-id": "api-gateway-2",
+      "node-type": "service",
+      "name": "API Gateway",
+      "description": "Edge service providing a single entry point for customer and admin requests.",
+      "metadata": {
+        "owner": "platform-team",
+        "oncall-slack": "#oncall-platform",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/api-gateway",
+        "tier": "tier-1",
+        "dependencies": ["order-service", "inventory-service"],
+        "dashboard": "https://grafana.example.com/d/api-gateway",
+        "log-query": "service:api-gateway AND instance:api-gateway-2",
+        "alerts": ["API Gateway 5xx Spike", "API Gateway Latency High"],
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "runtime": "nginx",
+        "sla-tier": "tier-1",
+        "ha-enabled": true
+      },
+      "controls": {
+        "performance": {
+          "description": "API Gateway rate limiting and caching requirements",
+          "requirements": [
+            {
+              "requirement-url": "https://internal-policy.example.com/performance/rate-limiting",
+              "config-url": "https://configs.example.com/gateway/rate-limits.yaml"
+            },
+            {
+              "requirement-url": "https://internal-policy.example.com/performance/caching-policy",
+              "config": { "default-ttl-seconds": 300, "cache-control": "private" }
+            }
+          ]
+        }
+      },
+      "interfaces": [
+        {
+          "unique-id": "api-gateway-2-internal-https",
+          "host": "api-gateway-2.internal",
+          "port": 8443,
+          "authentication": "mTLS"
+        }
+      ]
+    },
+    {
+      "unique-id": "order-service",
+      "node-type": "service",
+      "name": "Order Service",
+      "description": "Creates and manages customer orders, orchestrating inventory reservation and payment authorization.",
+      "metadata": {
+        "owner": "orders-team",
+        "oncall-slack": "#oncall-orders",
+        "health-endpoint": "/actuator/health",
+        "runbook": "https://runbooks.example.com/order-service",
+        "tier": "tier-1",
+        "dependencies": ["order-database-primary", "order-database-replica", "message-broker"],
+        "dashboard": "https://grafana.example.com/d/order-service",
+        "log-query": "service:order-service",
+        "alerts": ["Order Service Error Rate", "Order Service Latency High"],
+        "failure-modes": [
+          {
+            "symptom": "HTTP 503 errors",
+            "likely-cause": "Database connection pool exhausted",
+            "check": "Check connection pool metrics in Grafana dashboard",
+            "remediation": "Scale up service replicas or increase pool size",
+            "escalation": "If persists > 5min, page DBA team"
+          },
+          {
+            "symptom": "High latency (>2s p99)",
+            "likely-cause": "Payment service degradation",
+            "check": "Check payment-service health and circuit breaker status",
+            "remediation": "Circuit breaker should open automatically; check fallback queue",
+            "escalation": "Contact payments-team if circuit breaker not triggering"
+          },
+          {
+            "symptom": "Order validation failures",
+            "likely-cause": "Inventory service returning stale data",
+            "check": "Verify inventory-service cache TTL and database replication lag",
+            "remediation": "Clear inventory cache; check replica sync status",
+            "escalation": "Contact platform-team for cache issues"
+          }
+        ],
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "runtime": "java",
+        "sla-tier": "tier-1"
+      },
+      "controls": {
+        "circuit-breaker": {
+          "description": "Failure isolation thresholds for downstream calls.",
+          "requirements": [
+            {
+              "requirement-url": "https://internal-policy.example.com/resilience/circuit-breaker",
+              "config": {
+                "failure-rate-percent": 50,
+                "min-requests": 20,
+                "open-state-duration": "30s",
+                "half-open-max-requests": 5
+              }
+            }
+          ]
+        }
+      },
+      "interfaces": [
+        {
+          "unique-id": "order-service-http",
+          "host": "order-service.internal",
+          "port": 8080,
+          "basePath": "/orders",
+          "authentication": "mTLS"
+        },
+        {
+          "unique-id": "order-service-db-client",
+          "protocol": "JDBC",
+          "description": "Outbound JDBC client interface used to access the Order Database."
+        }
+      ]
+    },
+    {
+      "unique-id": "inventory-service",
+      "node-type": "service",
+      "name": "Inventory Service",
+      "description": "Tracks stock levels and reserves inventory for confirmed orders.",
+      "metadata": {
+        "owner": "inventory-team",
+        "oncall-slack": "#oncall-inventory",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/inventory-service",
+        "tier": "tier-2",
+        "dependencies": ["inventory-database"],
+        "dashboard": "https://grafana.example.com/d/inventory-service",
+        "log-query": "service:inventory-service",
+        "alerts": ["Inventory Service Error Rate", "Inventory Service Latency High"],
+        "failure-modes": [
+          {
+            "symptom": "Stale stock levels",
+            "likely-cause": "Cache TTL too long or replica lag",
+            "check": "Check inventory cache TTL and database replication lag",
+            "remediation": "Reduce cache TTL; verify replica sync status",
+            "escalation": "Contact platform-team for cache issues"
+          },
+          {
+            "symptom": "Inventory updates timing out",
+            "likely-cause": "Database contention or slow queries",
+            "check": "Review slow query logs and DB CPU metrics",
+            "remediation": "Add index or scale database resources",
+            "escalation": "Page DBA team if timeouts persist > 10min"
+          },
+          {
+            "symptom": "High 5xx error rate",
+            "likely-cause": "Dependency instability or memory pressure",
+            "check": "Inspect service memory usage and recent deployments",
+            "remediation": "Rollback recent deploy or scale replicas",
+            "escalation": "Contact inventory-team lead"
+          }
+        ],
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "runtime": "go",
+        "sla-tier": "tier-2"
+      },
+      "interfaces": [
+        {
+          "unique-id": "inventory-service-http",
+          "host": "inventory-service.internal",
+          "port": 8081,
+          "basePath": "/inventory",
+          "authentication": "mTLS"
+        },
+        {
+          "unique-id": "inventory-service-db-client",
+          "protocol": "JDBC",
+          "description": "Outbound JDBC client interface used to access the Inventory Database."
+        }
+      ]
+    },
+    {
+      "unique-id": "payment-service",
+      "node-type": "service",
+      "name": "Payment Service",
+      "description": "Authorizes and captures payments for orders.",
+      "metadata": {
+        "owner": "payments-team",
+        "oncall-slack": "#oncall-payments",
+        "health-endpoint": "/health",
+        "runbook": "https://runbooks.example.com/payment-service",
+        "tier": "tier-1",
+        "dependencies": ["message-broker"],
+        "dashboard": "https://grafana.example.com/d/payment-service",
+        "log-query": "service:payment-service",
+        "alerts": ["Payment Service Error Rate", "Payment Processing Backlog"],
+        "failure-modes": [
+          {
+            "symptom": "Payment processing backlog",
+            "likely-cause": "Consumer lag or broker throttling",
+            "check": "Check queue depth and consumer lag in broker dashboard",
+            "remediation": "Scale payment-service consumers",
+            "escalation": "Contact platform-team if broker throttling persists"
+          },
+          {
+            "symptom": "High payment decline rate",
+            "likely-cause": "External provider issues or misconfiguration",
+            "check": "Review provider status page and recent config changes",
+            "remediation": "Fail over to secondary provider or roll back config",
+            "escalation": "Page payments-team lead and vendor support"
+          },
+          {
+            "symptom": "AMQP connection errors",
+            "likely-cause": "Broker connectivity or auth issues",
+            "check": "Verify broker connectivity and credentials rotation logs",
+            "remediation": "Restart consumers; re-issue credentials",
+            "escalation": "Contact platform-team if connectivity issues persist"
+          }
+        ],
+        "repository": "https://example.com/repo",
+        "deployment-type": "container",
+        "runtime": "nodejs",
+        "sla-tier": "tier-1"
+      },
+      "controls": {
+        "compliance": {
+          "description": "PCI-DSS compliance for payment processing",
+          "requirements": [
+            {
+              "requirement-url": "https://www.pcisecuritystandards.org/documents/PCI-DSS-v4.0",
+              "config-url": "https://configs.example.com/compliance/pci-dss-config.json"
+            }
+          ]
+        }
+      },
+      "interfaces": [
+        {
+          "unique-id": "payment-service-http",
+          "host": "payment-service.internal",
+          "port": 8082,
+          "basePath": "/payments",
+          "authentication": "mTLS"
+        }
+      ]
+    },
+    {
+      "unique-id": "message-broker",
+      "node-type": "system",
+      "name": "Message Broker",
+      "description": "RabbitMQ broker handling async order processing messages.",
+      "metadata": {
+        "owner": "Platform Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed",
+        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
+      },
+      "interfaces": [
+        {
+          "unique-id": "rabbitmq-amqp",
+          "host": "message-broker.internal",
+          "port": 5672,
+          "protocol": "AMQP"
+        }
+      ]
+    },
+    {
+      "unique-id": "order-queue",
+      "node-type": "data-asset",
+      "name": "Order Queue",
+      "description": "Queue for order events awaiting payment processing.",
+      "metadata": {
+        "owner": "Platform Team",
+        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
+      }
+    },
+    {
+      "unique-id": "order-database-cluster",
+      "node-type": "system",
+      "name": "Order Database Cluster",
+      "description": "Cluster containing primary and replica order databases.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "replication-mode": "async"
+      },
+      "controls": {
+        "failover": {
+          "description": "Failover and recovery objectives for the order database cluster.",
+          "requirements": [
+            {
+              "requirement-url": "https://internal-policy.example.com/resilience/failover",
+              "config": { "rto": "15m", "rpo": "5m", "failover-mode": "automatic" }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "order-database-primary",
+      "node-type": "database",
+      "name": "Order Database Primary",
+      "description": "Primary store for order state, line items, and order history.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "engine": "postgresql",
+        "role": "primary",
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "30m",
+        "dba-contact": "dba-orders@example.com"
+      },
+      "interfaces": [
+        {
+          "unique-id": "order-db-primary-jdbc",
+          "protocol": "JDBC",
+          "host": "order-db-primary.internal",
+          "port": 5432,
+          "database": "orders"
+        }
+      ]
+    },
+    {
+      "unique-id": "order-database-replica",
+      "node-type": "database",
+      "name": "Order Database Replica",
+      "description": "Read replica for order queries.",
+      "metadata": {
+        "owner": "Orders Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "engine": "postgresql",
+        "role": "replica",
+        "replication-mode": "async",
+        "backup-schedule": "daily 02:00 UTC",
+        "restore-time": "45m",
+        "dba-contact": "dba-orders@example.com"
+      },
+      "interfaces": [
+        {
+          "unique-id": "order-db-replica-jdbc",
+          "protocol": "JDBC",
+          "host": "order-db-replica.internal",
+          "port": 5432,
+          "database": "orders"
+        }
+      ]
+    },
+    {
+      "unique-id": "inventory-database",
+      "node-type": "database",
+      "name": "Inventory Database",
+      "description": "Stores inventory SKUs, stock levels, and reservation records.",
+      "metadata": {
+        "owner": "Inventory Team",
+        "repository": "https://example.com/repo",
+        "deployment-type": "managed-database",
+        "engine": "postgresql",
+        "backup-schedule": "daily 03:00 UTC",
+        "restore-time": "45m",
+        "dba-contact": "dba-inventory@example.com"
+      },
+      "interfaces": [
+        {
+          "unique-id": "inventory-db-jdbc",
+          "protocol": "JDBC",
+          "host": "inventory-db.internal",
+          "port": 5432,
+          "database": "inventory"
+        }
+      ]
+    }
+  ],
+  "relationships": [
+    {
+      "unique-id": "us-east-1-deployed-in",
+      "description": "E-commerce platform system is deployed in US East 1 region.",
+      "relationship-type": {
+        "deployed-in": {
+          "container": "us-east-1",
+          "nodes": ["ecommerce-platform-system"]
+        }
+      }
+    },
+    {
+      "unique-id": "ecommerce-platform-composed-of",
+      "description": "System boundary is composed of the platform services and data stores.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "ecommerce-platform-system",
+          "nodes": [
+            "load-balancer",
+            "api-gateway-1",
+            "api-gateway-2",
+            "order-service",
+            "inventory-service",
+            "payment-service",
+            "message-broker",
+            "order-queue",
+            "order-database-cluster",
+            "inventory-database"
+          ]
+        }
+      }
+    },
+    {
+      "unique-id": "message-broker-composed-of",
+      "description": "Message broker contains the order processing queue.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "message-broker",
+          "nodes": ["order-queue"]
+        }
+      }
+    },
+    {
+      "unique-id": "order-database-cluster-composed-of",
+      "description": "Order database cluster includes primary and replica nodes.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "order-database-cluster",
+          "nodes": ["order-database-primary", "order-database-replica"]
+        }
+      }
+    },
+    {
+      "unique-id": "customer-interacts-with-load-balancer",
+      "description": "Customer submits and views orders using.",
+      "relationship-type": {
+        "interacts": {
+          "actor": "customer",
+          "nodes": ["load-balancer"]
+        }
+      }
+    },
+    {
+      "unique-id": "admin-interacts-with-load-balancer",
+      "description": "Admin manages operational tasks using.",
+      "relationship-type": {
+        "interacts": {
+          "actor": "admin",
+          "nodes": ["load-balancer"]
+        }
+      }
+    },
+    {
+      "unique-id": "load-balancer-connects-api-gateway-1",
+      "description": "Distributes traffic to API Gateway instance 1.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "ha-enabled": true
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "load-balancer",
+            "interfaces": ["load-balancer-public-https"]
+          },
+          "destination": {
+            "node": "api-gateway-1",
+            "interfaces": ["api-gateway-1-internal-https"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "load-balancer-connects-api-gateway-2",
+      "description": "Distributes traffic to API Gateway instance 2.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "ha-enabled": true
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "load-balancer",
+            "interfaces": ["load-balancer-public-https"]
+          },
+          "destination": {
+            "node": "api-gateway-2",
+            "interfaces": ["api-gateway-2-internal-https"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "api-gateway-1-connects-order-service",
+      "description": "Routes API requests to.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "latency-sla": "< 200ms p95",
+        "availability": "99.9%"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "api-gateway-1",
+            "interfaces": ["api-gateway-1-internal-https"]
+          },
+          "destination": {
+            "node": "order-service",
+            "interfaces": ["order-service-http"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "api-gateway-1-connects-inventory-service",
+      "description": "Routes API requests to.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "latency-sla": "< 200ms p95",
+        "availability": "99.9%"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "api-gateway-1",
+            "interfaces": ["api-gateway-1-internal-https"]
+          },
+          "destination": {
+            "node": "inventory-service",
+            "interfaces": ["inventory-service-http"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "api-gateway-2-connects-order-service",
+      "description": "Routes API requests to.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "latency-sla": "< 200ms p95",
+        "availability": "99.9%"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "api-gateway-2",
+            "interfaces": ["api-gateway-2-internal-https"]
+          },
+          "destination": {
+            "node": "order-service",
+            "interfaces": ["order-service-http"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "api-gateway-2-connects-inventory-service",
+      "description": "Routes API requests to.",
+      "protocol": "HTTPS",
+      "metadata": {
+        "monitoring": true,
+        "latency-sla": "< 200ms p95",
+        "availability": "99.9%"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "api-gateway-2",
+            "interfaces": ["api-gateway-2-internal-https"]
+          },
+          "destination": {
+            "node": "inventory-service",
+            "interfaces": ["inventory-service-http"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "order-service-connects-order-database-primary",
+      "description": "Writes and queries order data in the primary database.",
+      "protocol": "JDBC",
+      "metadata": {
+        "connection-pool": "default",
+        "encryption-in-transit": true,
+        "monitoring": true,
+        "latency-sla": "< 50ms p95",
+        "access-pattern": "read-write"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "order-service",
+            "interfaces": ["order-service-db-client"]
+          },
+          "destination": {
+            "node": "order-database-primary",
+            "interfaces": ["order-db-primary-jdbc"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "order-service-connects-order-database-replica",
+      "description": "Reads order data from the replica database.",
+      "protocol": "JDBC",
+      "metadata": {
+        "connection-pool": "read-only",
+        "encryption-in-transit": true,
+        "monitoring": true,
+        "latency-sla": "< 50ms p95",
+        "access-pattern": "read-only"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "order-service",
+            "interfaces": ["order-service-db-client"]
+          },
+          "destination": {
+            "node": "order-database-replica",
+            "interfaces": ["order-db-replica-jdbc"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "order-service-publishes-order-queue",
+      "description": "Publishes order events to the message broker queue.",
+      "protocol": "AMQP",
+      "metadata": {
+        "monitoring": true,
+        "queue": "order-queue",
+        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "order-service"
+          },
+          "destination": {
+            "node": "message-broker",
+            "interfaces": ["rabbitmq-amqp"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "payment-service-consumes-order-queue",
+      "description": "Consumes order events from the message broker queue.",
+      "protocol": "AMQP",
+      "metadata": {
+        "monitoring": true,
+        "queue": "order-queue",
+        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "payment-service"
+          },
+          "destination": {
+            "node": "message-broker",
+            "interfaces": ["rabbitmq-amqp"]
+          }
+        }
+      }
+    },
+    {
+      "unique-id": "inventory-service-connects-inventory-database",
+      "description": "Persists and queries inventory state in.",
+      "protocol": "JDBC",
+      "metadata": {
+        "connection-pool": "default",
+        "encryption-in-transit": true,
+        "monitoring": true,
+        "latency-sla": "< 50ms p95"
+      },
+      "relationship-type": {
+        "connects": {
+          "source": {
+            "node": "inventory-service",
+            "interfaces": ["inventory-service-db-client"]
+          },
+          "destination": {
+            "node": "inventory-database",
+            "interfaces": ["inventory-db-jdbc"]
+          }
+        }
+      }
+    }
+  ]
+}
