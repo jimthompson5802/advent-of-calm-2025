@@ -30,36 +30,6 @@
       }
     },
     {
-      "unique-id": "message-broker",
-      "node-type": "system",
-      "name": "Message Broker",
-      "description": "RabbitMQ broker handling async order processing messages.",
-      "metadata": {
-        "owner": "Platform Team",
-        "repository": "https://example.com/repo",
-        "deployment-type": "managed",
-        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
-      },
-      "interfaces": [
-        {
-          "unique-id": "rabbitmq-amqp",
-          "host": "message-broker.internal",
-          "port": 5672,
-          "protocol": "AMQP"
-        }
-      ]
-    },
-    {
-      "unique-id": "order-queue",
-      "node-type": "data-asset",
-      "name": "Order Queue",
-      "description": "Queue for order events awaiting payment processing.",
-      "metadata": {
-        "owner": "Platform Team",
-        "adr": "docs/adr/0001-use-message-queue-for-async-processing.md"
-      }
-    },
-    {
       "unique-id": "order-database-cluster",
       "node-type": "system",
       "name": "Order Database Cluster",
@@ -588,18 +558,6 @@
   ],
   "relationships": [
     {
-      "unique-id": "message-broker-composed-of",
-      "description": "Message broker contains the order processing queue.",
-      "relationship-type": {
-        "composed-of": {
-          "container": "message-broker",
-          "nodes": [
-            "order-queue"
-          ]
-        }
-      }
-    },
-    {
       "unique-id": "ecommerce-platform-backup-composed-of",
       "description": "Backup system boundary is composed of backup platform services and data stores.",
       "relationship-type": {
@@ -639,8 +597,7 @@
         "composed-of": {
           "container": "ecommerce-platform-system",
           "nodes": [
-            "order-database-cluster",
-            "message-broker"
+            "order-database-cluster"
           ]
         }
       }
