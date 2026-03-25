@@ -633,6 +633,19 @@
       }
     },
     {
+      "unique-id": "ecommerce-platform-composed-of",
+      "description": "E-commerce platform system contains core infrastructure components.",
+      "relationship-type": {
+        "composed-of": {
+          "container": "ecommerce-platform-system",
+          "nodes": [
+            "order-database-cluster",
+            "message-broker"
+          ]
+        }
+      }
+    },
+    {
       "unique-id": "load-balancer-backup-connects-api-gateway-1-backup",
       "description": "Routes backup traffic to backup API Gateway instance 1.",
       "protocol": "HTTPS",
